@@ -1,0 +1,192 @@
+/* Variabili */
+
+let testo = "g";
+
+let dimensione = 0.8;
+let interlinea = 0.9;
+let allineamento = "centro";
+
+let percorsoFont = "./assets/InputMonoCondensed-BoldItalic.ttf";
+
+let mostraTesto = false;
+let densita = 1;
+
+/* Funzione */
+
+function carica() {}
+
+let mic;
+
+function impostazioni() {
+  mic = new p5.AudioIn();
+  mic.start();
+}
+
+function disegnaPunto({ x, y, angolo, indice, unita }) {
+  push();
+  translate(x, y);
+
+  // if (indice % 2 == 0) {
+  //   fill(0);
+  // } else {
+  //   fill(255);
+  // }
+  noFill();
+  stroke(0);
+
+  console.log(mic.getLevel());
+
+  rectMode(CENTER);
+  rotate(frameCount + indice);
+  rect(0, 0, unita / 2);
+  pop();
+}
+
+/* Procedure (cose brutte) */
+
+let font;
+let actualFontSize = 1;
+
+function preload() {
+  font = loadFont(percorsoFont);
+  carica();
+}
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  textAlign(getTextAlignment());
+  getTextBounds(true);
+  frameRate(30);
+  angleMode(DEGREES);
+
+  impostazioni();
+}
+
+function draw() {
+  background(220);
+
+  fill("deeppink");
+  textFont(font);
+  textSize(actualFontSize);
+  textLeading(actualFontSize * interlinea);
+
+  // Get the current text bounds at the actual text size
+  const bounds = getTextBounds();
+
+  // Calculate position based on alignment
+  let xPos, yPos;
+
+  if (allineamento === "centro") {
+    xPos = width / 2;
+    // Adjust y position to account for the actual center of the text bounds
+    // rather than just using height/2
+    yPos = height / 2 - bounds.y - bounds.h / 2;
+  } else if (allineamento === "sinistra") {
+    xPos = width * 0.1; // 10% margin from left
+    yPos = height / 2 - bounds.y - bounds.h / 2;
+  } else if (allineamento === "destra") {
+    xPos = width * 0.9; // 10% margin from right
+    yPos = height / 2 - bounds.y - bounds.h / 2;
+  }
+
+  // Draw text at calculated position
+  if (mostraTesto) {
+    push();
+    text(testo, xPos, yPos);
+    pop();
+  }
+
+  const points = font.textToPoints(testo, xPos, yPos, actualFontSize, {
+    sampleFactor: densita / 10,
+  });
+
+  points.forEach((point, index) =>
+    disegnaPunto({
+      x: point.x,
+      y: point.y,
+      angolo: point.alpha,
+      indice: index,
+      unita: min(width / 10, height / 10),
+    })
+  );
+
+  // Debug: draw bounding box (uncomment to visualize)
+  // noFill();
+  // stroke('blue');
+  // if (allineamento === "centro") {
+  //   rect(xPos - bounds.w/2, yPos + bounds.y, bounds.w, bounds.h);
+  // } else if (allineamento === "sinistra") {
+  //   rect(xPos, yPos + bounds.y, bounds.w, bounds.h);
+  // } else if (allineamento === "destra") {
+  //   rect(xPos - bounds.w, yPos + bounds.y, bounds.w, bounds.h);
+  // }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  getTextBounds(true);
+}
+
+function getTextBounds(recalculateSize = false) {
+  const testFontSize = 10;
+  let bounds;
+
+  if (recalculateSize) {
+    // Calculate scaling with test font size
+    push();
+    textSize(testFontSize);
+    textLeading(testFontSize * interlinea);
+    textAlign(getTextAlignment());
+    bounds = font.textBounds(testo, 0, 0);
+    pop();
+
+    // Calculate the ratio needed to fit the width and height within canvas
+    const widthRatio = width / bounds.w;
+    const heightRatio = height / bounds.h;
+
+    // Use the smaller ratio to ensure text fits in both dimensions
+    // Apply some margin by multiplying by 0.9 (90% of available space)
+    const ratio = Math.min(widthRatio, heightRatio) * 0.9;
+
+    // Calculate the base font size (without user scaling)
+    const baseFontSize = testFontSize * ratio;
+
+    // Apply user's dimensione scaling factor to get the actual font size
+    actualFontSize = baseFontSize * dimensione;
+  }
+
+  // Get bounds at current actualFontSize
+  push();
+  textSize(actualFontSize);
+  textLeading(actualFontSize * interlinea);
+  textAlign(getTextAlignment());
+  bounds = font.textBounds(testo, 0, 0);
+  pop();
+
+  // Return the actual bounds at the current text size
+  return bounds;
+}
+
+function getTextAlignment() {
+  switch (allineamento) {
+    case "centro":
+      return CENTER;
+    case "sinistra":
+      return LEFT;
+    case "destra":
+      return RIGHT;
+    default:
+      return CENTER;
+  }
+}
+
+function keyPressed() {
+  const increase = 0.1;
+
+  if (key == "+") {
+    densita += increase;
+  }
+  if (key == "-" && densita > increase * 2) {
+    densita -= increase;
+  }
+}
