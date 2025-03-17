@@ -1,4 +1,4 @@
-/* Variabili */
+// /* Variabili */
 
 let testo = "g";
 
@@ -8,21 +8,28 @@ let allineamento = "centro";
 
 let percorsoFont = "./assets/InputMonoCondensed-BoldItalic.ttf";
 
-let mostraTesto = false;
+let mostraTesto = true;
 let densita = 1;
 
 /* Funzione */
 
-function carica() {}
+let img;
 
-let mic;
-
-function impostazioni() {
-  mic = new p5.AudioIn();
-  mic.start();
+function carica() {
+  img = loadImage("./assets/download.jpeg");
 }
 
-function disegnaPunto({ x, y, angolo, indice, unita }) {
+let graphics;
+
+function impostazioni() {
+  graphics = createGraphics(50, 50);
+  graphics.image(img, -30, -30);
+}
+
+let mic;
+let micLevel = 0;
+
+function disegnaPunto({ x, y, angolo, indice, unita, volume }) {
   push();
   translate(x, y);
 
@@ -34,12 +41,15 @@ function disegnaPunto({ x, y, angolo, indice, unita }) {
   noFill();
   stroke(0);
 
-  console.log(mic.getLevel());
-
   rectMode(CENTER);
+  fill("deeppink");
+  noStroke();
   rotate(frameCount + indice);
+  scale(1 + volume * 10);
   rect(0, 0, unita / 2);
   pop();
+
+  // image(graphics, x, y);
 }
 
 /* Procedure (cose brutte) */
@@ -54,6 +64,9 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  mic = new p5.AudioIn();
+  mic.start();
+
   textAlign(getTextAlignment());
   getTextBounds(true);
   frameRate(30);
@@ -64,6 +77,7 @@ function setup() {
 
 function draw() {
   background(220);
+  micLevel = mic.getLevel();
 
   fill("deeppink");
   textFont(font);
@@ -107,6 +121,7 @@ function draw() {
       angolo: point.alpha,
       indice: index,
       unita: min(width / 10, height / 10),
+      volume: micLevel,
     })
   );
 
@@ -189,4 +204,8 @@ function keyPressed() {
   if (key == "-" && densita > increase * 2) {
     densita -= increase;
   }
+}
+
+function mouseClicked() {
+  userStartAudio();
 }
