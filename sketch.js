@@ -46,7 +46,7 @@ function disegnaPunto({ x, y, angolo, indice, unita, volume }) {
   noStroke();
   rotate(frameCount + indice);
   scale(1 + volume * 10);
-  rect(0, 0, unita / 2);
+  rect(0, 0, unita / 2, accelerationX);
   pop();
 
   // image(graphics, x, y);
