@@ -77,13 +77,20 @@ function setup() {
   setupStartButtonClick();
 }
 
+let alpha = 0;
+let beta = 0;
+let gamma = 0;
+
 function draw() {
   background(220);
   micLevel = mic.getLevel() * sensibilita;
 
   textFont("arial");
   textSize(50);
-  text(accelerationX, 100, 100);
+
+  text(alpha, 100, 100);
+  text(beta, 100, 200);
+  text(gamma, 100, 300);
 
   fill("deeppink");
   textFont(font);
@@ -226,6 +233,11 @@ function setupStartButtonClick() {
         description.style.display = "none";
       });
     userStartAudio();
+    setupOrientationCapture((beta, gamma, alpha) => {
+      alpha = alpha;
+      beta = beta;
+      gamma = gamma;
+    });
   });
 
   document
