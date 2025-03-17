@@ -234,6 +234,24 @@ function setupStartButtonClick() {
       });
     userStartAudio();
 
+    try {
+      const detectDeviceOrientation = new window.DetectDeviceOrientation();
+      detectDeviceOrientation.requestDeviceOrientationPermission();
+    } catch (error) {
+      console.error("Failed to initialize device orientation:", error);
+      const errorDiv = document.createElement("div");
+      errorDiv.style.position = "fixed";
+      errorDiv.style.top = "50%";
+      errorDiv.style.left = "50%";
+      errorDiv.style.transform = "translate(-50%, -50%)";
+      errorDiv.style.backgroundColor = "red";
+      errorDiv.style.color = "white";
+      errorDiv.style.padding = "20px";
+      errorDiv.style.borderRadius = "5px";
+      errorDiv.textContent = "Device orientation not available";
+      document.body.appendChild(errorDiv);
+    }
+
     setupOrientationCapture((b, g, a) => {
       console.log(b, g, a);
       angle_alpha = a;
