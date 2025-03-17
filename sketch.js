@@ -77,9 +77,9 @@ function setup() {
   setupStartButtonClick();
 }
 
-let alpha = 0;
-let beta = 0;
-let gamma = 0;
+let angle_alpha = 0;
+let angle_beta = 0;
+let angle_gamma = 0;
 
 function draw() {
   background(220);
@@ -88,9 +88,9 @@ function draw() {
   textFont("arial");
   textSize(50);
 
-  text(alpha, 100, 100);
-  text(beta, 100, 200);
-  text(gamma, 100, 300);
+  text(angle_alpha, 100, 100);
+  text(angle_beta, 100, 200);
+  text(angle_gamma, 100, 300);
 
   fill("deeppink");
   textFont(font);
@@ -233,10 +233,12 @@ function setupStartButtonClick() {
         description.style.display = "none";
       });
     userStartAudio();
-    setupOrientationCapture((beta, gamma, alpha) => {
-      alpha = alpha;
-      beta = beta;
-      gamma = gamma;
+
+    setupOrientationCapture((b, g, a) => {
+      console.log(b, g, a);
+      angle_alpha = a;
+      angle_beta = b;
+      angle_gamma = g;
     });
   });
 

@@ -11,13 +11,14 @@
  * @param {orientationCallback} onOrientationChange - Callback function handling orientation changes
  */
 function setupOrientationCapture(onOrientationChange) {
-  if (window.DeviceOrientationEvent) {
+  try {
     window.addEventListener("deviceorientation", (event) => {
       const rotateDegrees = event.alpha; // alpha: rotation around z-axis
       const leftToRight = event.gamma; // gamma: left to right
       const frontToBack = event.beta; // beta: front back motion
-
       onOrientationChange(frontToBack, leftToRight, rotateDegrees);
     });
+  } catch (error) {
+    console.error("Error setting up orientation capture:", error);
   }
 }
