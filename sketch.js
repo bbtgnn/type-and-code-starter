@@ -10,6 +10,7 @@ let percorsoFont = "./assets/InputMonoCondensed-BoldItalic.ttf";
 
 let mostraTesto = true;
 let densita = 1;
+let sensibilita = 1;
 
 /* Funzione */
 
@@ -73,11 +74,12 @@ function setup() {
   angleMode(DEGREES);
 
   impostazioni();
+  setupStartButtonClick();
 }
 
 function draw() {
   background(220);
-  micLevel = mic.getLevel();
+  micLevel = mic.getLevel() * sensibilita;
 
   textFont("arial");
   textSize(50);
@@ -199,6 +201,8 @@ function getTextAlignment() {
   }
 }
 
+let isRecording = false;
+
 function keyPressed() {
   const increase = 0.1;
 
@@ -210,6 +214,30 @@ function keyPressed() {
   }
 }
 
-function mouseClicked() {
-  userStartAudio();
+function setupStartButtonClick() {
+  document.getElementById("start").addEventListener("click", () => {
+    document.getElementById("intro").style.display = "none";
+    document.querySelectorAll(".control-button").forEach((button) => {
+      button.style.opacity = "0";
+    });
+    userStartAudio();
+  });
+
+  document
+    .getElementById("decrease-sensitivity")
+    .addEventListener("click", () => {
+      densita -= 0.1;
+    });
+  document
+    .getElementById("increase-sensitivity")
+    .addEventListener("click", () => {
+      densita += 0.1;
+    });
+
+  document.getElementById("decrease-density").addEventListener("click", () => {
+    densita -= 0.1;
+  });
+  document.getElementById("increase-density").addEventListener("click", () => {
+    densita += 0.1;
+  });
 }

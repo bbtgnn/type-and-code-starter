@@ -1,13 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
   <head>
     <script src="./p5/p5.js"></script>
     <script src="./p5/p5.sound.min.js"></script>
+    <link rel="stylesheet" href="./style.reset.css" />
     <link rel="stylesheet" type="text/css" href="./style.css" />
     <meta charset="utf-8" />
   </head>
   <body>
     <main></main>
     <script src="./sketch.js"></script>
+
+    <div id="intro">
+      <h1>Ciao! 👋</h1>
+      <p>Clicca il pulsante per iniziare!</p>
+      <div id="important-info">
+        <p id="important-info-title">Importante!</p>
+        <p>
+          I pulsanti
+          <span style="background-color: deeppink">rosa</span> diventeranno
+          invisibili ma continueranno a funzionare
+        </p>
+      </div>
+
+      <button id="start">Inizia</button>
+    </div>
+
+    <div id="controls-top">
+      <button class="control-button" id="decrease-sensitivity">-</button>
+      <button class="control-button" id="reset-sensitivity">Reset</button>
+      <p>Sensibilità microfono</p>
+      <button class="control-button" id="increase-sensitivity">+</button>
+    </div>
+
+    <div id="controls-bottom">
+      <button class="control-button" id="decrease-density">-</button>
+      <button class="control-button" id="reset-density">Reset</button>
+      <p>Densità Punti</p>
+      <button class="control-button" id="increase-density">+</button>
+    </div>
   </body>
 </html>

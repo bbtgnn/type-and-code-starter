@@ -2,7 +2,108 @@ html,
 body {
   margin: 0;
   padding: 0;
+
+  font-family: ui-monospace, "Cascadia Mono", "Segoe UI Mono", "Ubuntu Mono",
+    "Roboto Mono", Menlo, Monaco, "Courier New", monospace;
 }
 canvas {
   display: block;
+}
+
+#intro {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100svw;
+  height: 100svh;
+  background-color: #000;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4rem;
+  gap: 1rem;
+}
+
+#controls-top,
+#controls-bottom {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  color: white;
+  width: 100svw;
+}
+
+.control-button {
+  --size: 3rem;
+  --border-radius: 0.5rem;
+  width: var(--size);
+  height: var(--size);
+  background-color: deeppink;
+  border: none;
+  font-size: 1.5rem;
+  color: white;
+}
+
+#controls-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#controls-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+#increase-sensitivity,
+#decrease-sensitivity,
+#increase-density,
+#decrease-density {
+  background-color: deeppink;
+  border: none;
+  width: var(--size);
+  height: var(--size);
+}
+
+#increase-sensitivity {
+  border-radius: 0 0 0 var(--border-radius);
+}
+
+#decrease-sensitivity {
+  border-radius: 0 0 var(--border-radius) 0;
+}
+
+#increase-density {
+  border-radius: var(--border-radius) 0 0 0;
+}
+
+#decrease-density {
+  border-radius: 0 var(--border-radius) 0 0;
+}
+
+#important-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+#important-info {
+  background-color: rgba(255, 215, 0, 0.2);
+  border: 2px solid gold;
+  border-radius: 1rem;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+#important-info p:first-child {
+  color: deeppink;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+#important-info-title {
+  color: gold !important;
 }
