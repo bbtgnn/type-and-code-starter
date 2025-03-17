@@ -17,6 +17,11 @@ let permissionGranted = false;
 let nonios13device = false;
 let f = 0;
 
+// Device orientation angles
+let deviceRotationX = 0;
+let deviceRotationY = 0;
+let deviceRotationZ = 0;
+
 /* Funzione */
 
 let img;
@@ -82,6 +87,7 @@ function setup() {
 
   impostazioni();
   setupStartButtonClick();
+  setupDeviceOrientationListener();
 
   // Set default permission for non-iOS devices
   if (
@@ -93,6 +99,15 @@ function setup() {
     permissionGranted = true;
     nonios13device = true;
   }
+}
+
+// Set up device orientation event listener
+function setupDeviceOrientationListener() {
+  window.addEventListener("deviceorientation", (event) => {
+    deviceRotationZ = event.alpha; // z-axis rotation (0-360)
+    deviceRotationX = event.beta; // x-axis rotation (-180 to 180)
+    deviceRotationY = event.gamma; // y-axis rotation (-90 to 90)
+  });
 }
 
 // will handle first time visiting to grant access
@@ -183,6 +198,34 @@ function draw() {
   // } else if (allineamento === "destra") {
   //   rect(xPos - bounds.w, yPos + bounds.y, bounds.w, bounds.h);
   // }
+
+  // Display orientation angles
+  displayOrientationValues();
+}
+
+function displayOrientationValues() {
+  push();
+  fill(0);
+  noStroke();
+  textSize(16);
+  textAlign(LEFT);
+  textFont("Arial");
+
+  const x = 20;
+  const y = height - 100;
+
+  // Add null checks before calling toFixed
+  const betaValue =
+    deviceRotationX !== null ? deviceRotationX.toFixed(2) : "N/A";
+  const gammaValue =
+    deviceRotationY !== null ? deviceRotationY.toFixed(2) : "N/A";
+  const alphaValue =
+    deviceRotationZ !== null ? deviceRotationZ.toFixed(2) : "N/A";
+
+  text(`X (beta): ${betaValue}${betaValue !== "N/A" ? "°" : ""}`, x, y);
+  text(`Y (gamma): ${gammaValue}${gammaValue !== "N/A" ? "°" : ""}`, x, y + 25);
+  text(`Z (alpha): ${alphaValue}${alphaValue !== "N/A" ? "°" : ""}`, x, y + 50);
+  pop();
 }
 
 /*The deviceShaken() function is called when the device total acceleration changes of accelerationX and accelerationY values is more than the threshold value. The default threshold is set to 30. The threshold value can be changed using setShakeThreshold()*/
@@ -248,8 +291,6 @@ function getTextAlignment() {
       return CENTER;
   }
 }
-
-let isRecording = false;
 
 function keyPressed() {
   const increase = 0.1;
