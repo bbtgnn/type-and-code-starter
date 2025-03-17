@@ -83,44 +83,34 @@ function setup() {
   impostazioni();
   setupStartButtonClick();
 
-  // Device orientation permission setup
+  // Set default permission for non-iOS devices
   if (
-    typeof DeviceOrientationEvent !== "undefined" &&
-    typeof DeviceOrientationEvent.requestPermission === "function"
+    !(
+      typeof DeviceOrientationEvent !== "undefined" &&
+      typeof DeviceOrientationEvent.requestPermission === "function"
+    )
   ) {
-    DeviceOrientationEvent.requestPermission()
-      .catch(() => {
-        // show permission dialog only the first time
-        // it needs to be a user gesture (requirement) in this case, click
-        let askButton = createButton("Allow access to sensors");
-        askButton.style("font-size", "24px");
-        askButton.position(10, 10);
-        askButton.mousePressed(onAskButtonClicked);
-        throw new Error("Permission required"); // keep the promise chain as rejected
-      })
-      .then(() => {
-        // this runs on subsequent visits
-        permissionGranted = true;
-      });
-  } else {
-    // it's up to you how to handle non ios 13 devices
     permissionGranted = true;
     nonios13device = true;
   }
 }
 
 // will handle first time visiting to grant access
-function onAskButtonClicked() {
-  DeviceOrientationEvent.requestPermission()
-    .then((response) => {
-      if (response === "granted") {
-        permissionGranted = true;
-      } else {
-        permissionGranted = false;
-      }
-      this.remove();
-    })
-    .catch(console.error);
+function requestDevicePermission() {
+  if (
+    typeof DeviceOrientationEvent !== "undefined" &&
+    typeof DeviceOrientationEvent.requestPermission === "function"
+  ) {
+    DeviceOrientationEvent.requestPermission()
+      .then((response) => {
+        if (response === "granted") {
+          permissionGranted = true;
+        } else {
+          permissionGranted = false;
+        }
+      })
+      .catch(console.error);
+  }
 }
 
 function draw() {
@@ -289,6 +279,8 @@ function setupStartButtonClick() {
           if (description) description.style.display = "none";
         });
 
+      // Request device orientation permission and start audio
+      requestDevicePermission();
       userStartAudio();
     });
   }
