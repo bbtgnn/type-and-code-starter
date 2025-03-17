@@ -12,6 +12,11 @@ let mostraTesto = true;
 let densita = 1;
 let sensibilita = 1;
 
+// Device orientation variables
+let permissionGranted = false;
+let nonios13device = false;
+let f = 0;
+
 /* Funzione */
 
 let img;
@@ -65,6 +70,8 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  colorMode(HSB, 360, 100, 100, 100);
+
   mic = new p5.AudioIn();
   mic.start();
 
@@ -75,10 +82,59 @@ function setup() {
 
   impostazioni();
   setupStartButtonClick();
+
+  // Device orientation permission setup
+  if (
+    typeof DeviceOrientationEvent !== "undefined" &&
+    typeof DeviceOrientationEvent.requestPermission === "function"
+  ) {
+    DeviceOrientationEvent.requestPermission()
+      .catch(() => {
+        // show permission dialog only the first time
+        // it needs to be a user gesture (requirement) in this case, click
+        let askButton = createButton("Allow access to sensors");
+        askButton.style("font-size", "24px");
+        askButton.position(10, 10);
+        askButton.mousePressed(onAskButtonClicked);
+        throw new Error("Permission required"); // keep the promise chain as rejected
+      })
+      .then(() => {
+        // this runs on subsequent visits
+        permissionGranted = true;
+      });
+  } else {
+    // it's up to you how to handle non ios 13 devices
+    permissionGranted = true;
+    nonios13device = true;
+  }
+}
+
+// will handle first time visiting to grant access
+function onAskButtonClicked() {
+  DeviceOrientationEvent.requestPermission()
+    .then((response) => {
+      if (response === "granted") {
+        permissionGranted = true;
+      } else {
+        permissionGranted = false;
+      }
+      this.remove();
+    })
+    .catch(console.error);
 }
 
 function draw() {
-  background(220);
+  // Create a background color that changes when shaken
+  background(f, 20, 100);
+
+  if (!permissionGranted) {
+    fill(0);
+    textSize(24);
+    textAlign(CENTER, CENTER);
+    text("Please grant sensor permissions", width / 2, height / 2);
+    return;
+  }
+
   micLevel = mic.getLevel() * sensibilita;
 
   fill("deeppink");
@@ -137,6 +193,12 @@ function draw() {
   // } else if (allineamento === "destra") {
   //   rect(xPos - bounds.w, yPos + bounds.y, bounds.w, bounds.h);
   // }
+}
+
+/*The deviceShaken() function is called when the device total acceleration changes of accelerationX and accelerationY values is more than the threshold value. The default threshold is set to 30. The threshold value can be changed using setShakeThreshold()*/
+
+function deviceShaken() {
+  f = (f + 30) % 360;
 }
 
 function windowResized() {
@@ -211,41 +273,70 @@ function keyPressed() {
 }
 
 function setupStartButtonClick() {
-  document.getElementById("start").addEventListener("click", () => {
-    document.getElementById("intro").style.display = "none";
-    document.querySelectorAll(".control-button").forEach((button) => {
-      button.style.opacity = "0";
-    });
-    document
-      .querySelectorAll(".control-description-container")
-      .forEach((description) => {
-        description.style.display = "none";
-      });
-    userStartAudio();
-  });
+  const startButton = document.getElementById("start");
+  if (startButton) {
+    startButton.addEventListener("click", () => {
+      const introElement = document.getElementById("intro");
+      if (introElement) introElement.style.display = "none";
 
-  document
-    .getElementById("decrease-sensitivity")
-    .addEventListener("click", () => {
+      document.querySelectorAll(".control-button").forEach((button) => {
+        if (button) button.style.opacity = "0";
+      });
+
+      document
+        .querySelectorAll(".control-description-container")
+        .forEach((description) => {
+          if (description) description.style.display = "none";
+        });
+
+      userStartAudio();
+    });
+  }
+
+  const decreaseSensitivityButton = document.getElementById(
+    "decrease-sensitivity"
+  );
+  if (decreaseSensitivityButton) {
+    decreaseSensitivityButton.addEventListener("click", () => {
       sensibilita -= 0.5;
       if (sensibilita < 0.1) sensibilita = 0.1;
     });
-  document
-    .getElementById("increase-sensitivity")
-    .addEventListener("click", () => {
+  }
+
+  const increaseSensitivityButton = document.getElementById(
+    "increase-sensitivity"
+  );
+  if (increaseSensitivityButton) {
+    increaseSensitivityButton.addEventListener("click", () => {
       sensibilita += 0.5;
     });
-  document.getElementById("reset-sensitivity").addEventListener("click", () => {
-    sensibilita = 1;
-  });
+  }
 
-  document.getElementById("decrease-density").addEventListener("click", () => {
-    densita -= 0.1;
-  });
-  document.getElementById("increase-density").addEventListener("click", () => {
-    densita += 0.1;
-  });
-  document.getElementById("reset-density").addEventListener("click", () => {
-    densita = 1;
-  });
+  const resetSensitivityButton = document.getElementById("reset-sensitivity");
+  if (resetSensitivityButton) {
+    resetSensitivityButton.addEventListener("click", () => {
+      sensibilita = 1;
+    });
+  }
+
+  const decreaseDensityButton = document.getElementById("decrease-density");
+  if (decreaseDensityButton) {
+    decreaseDensityButton.addEventListener("click", () => {
+      densita -= 0.1;
+    });
+  }
+
+  const increaseDensityButton = document.getElementById("increase-density");
+  if (increaseDensityButton) {
+    increaseDensityButton.addEventListener("click", () => {
+      densita += 0.1;
+    });
+  }
+
+  const resetDensityButton = document.getElementById("reset-density");
+  if (resetDensityButton) {
+    resetDensityButton.addEventListener("click", () => {
+      densita = 1;
+    });
+  }
 }
