@@ -77,20 +77,9 @@ function setup() {
   setupStartButtonClick();
 }
 
-let angle_alpha = 0;
-let angle_beta = 0;
-let angle_gamma = 0;
-
 function draw() {
   background(220);
   micLevel = mic.getLevel() * sensibilita;
-
-  textFont("arial");
-  textSize(50);
-
-  text(angle_alpha, 100, 100);
-  text(angle_beta, 100, 200);
-  text(angle_gamma, 100, 300);
 
   fill("deeppink");
   textFont(font);
@@ -233,31 +222,6 @@ function setupStartButtonClick() {
         description.style.display = "none";
       });
     userStartAudio();
-
-    try {
-      const detectDeviceOrientation = new window.DetectDeviceOrientation();
-      detectDeviceOrientation.requestDeviceOrientationPermission();
-    } catch (error) {
-      console.error("Failed to initialize device orientation:", error);
-      const errorDiv = document.createElement("div");
-      errorDiv.style.position = "fixed";
-      errorDiv.style.top = "50%";
-      errorDiv.style.left = "50%";
-      errorDiv.style.transform = "translate(-50%, -50%)";
-      errorDiv.style.backgroundColor = "red";
-      errorDiv.style.color = "white";
-      errorDiv.style.padding = "20px";
-      errorDiv.style.borderRadius = "5px";
-      errorDiv.textContent = "Device orientation not available";
-      document.body.appendChild(errorDiv);
-    }
-
-    setupOrientationCapture((b, g, a) => {
-      console.log(b, g, a);
-      angle_alpha = a;
-      angle_beta = b;
-      angle_gamma = g;
-    });
   });
 
   document
