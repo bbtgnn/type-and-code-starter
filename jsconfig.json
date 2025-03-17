@@ -1,10 +1,5 @@
 {
-  "include": [
-    "*.js",
-    "**/*.js",
-    "./@modules/p5/index.d.ts",
-    "./@modules/p5/global.d.ts"
-  ],
+  "include": ["*.js", "**/*.js", "./p5/index.d.ts", "./p5/global.d.ts"],
   "compilerOptions": {
     "checkJs": true
   }
