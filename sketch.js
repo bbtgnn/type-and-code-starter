@@ -46,7 +46,7 @@ function disegnaPunto({ x, y, angolo, indice, unita, volume }) {
   noStroke();
   rotate(frameCount + indice);
   scale(1 + volume * 10);
-  rect(0, 0, unita / 2, accelerationX);
+  rect(0, 0, unita / 2);
   pop();
 
   // image(graphics, x, y);
@@ -78,6 +78,10 @@ function setup() {
 function draw() {
   background(220);
   micLevel = mic.getLevel();
+
+  textFont("arial");
+  textSize(50);
+  text(accelerationX, 100, 100);
 
   fill("deeppink");
   textFont(font);
