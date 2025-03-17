@@ -220,24 +220,36 @@ function setupStartButtonClick() {
     document.querySelectorAll(".control-button").forEach((button) => {
       button.style.opacity = "0";
     });
+    document
+      .querySelectorAll(".control-description-container")
+      .forEach((description) => {
+        description.style.display = "none";
+      });
     userStartAudio();
   });
 
   document
     .getElementById("decrease-sensitivity")
     .addEventListener("click", () => {
-      densita -= 0.1;
+      sensibilita -= 0.5;
+      if (sensibilita < 0.1) sensibilita = 0.1;
     });
   document
     .getElementById("increase-sensitivity")
     .addEventListener("click", () => {
-      densita += 0.1;
+      sensibilita += 0.5;
     });
+  document.getElementById("reset-sensitivity").addEventListener("click", () => {
+    sensibilita = 1;
+  });
 
   document.getElementById("decrease-density").addEventListener("click", () => {
     densita -= 0.1;
   });
   document.getElementById("increase-density").addEventListener("click", () => {
     densita += 0.1;
+  });
+  document.getElementById("reset-density").addEventListener("click", () => {
+    densita = 1;
   });
 }
