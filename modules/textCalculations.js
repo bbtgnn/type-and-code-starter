@@ -125,7 +125,7 @@ function calculatePosition(bounds, allineamento, width, height) {
  * Gets p5.js text alignment constant from string
  * @param {string} allineamento - The text alignment string ('centro', 'sinistra', or 'destra')
  */
-function getTextAlignment(allineamento) {
+export function getTextAlignment(allineamento) {
   switch (allineamento) {
     case "centro":
       return CENTER;

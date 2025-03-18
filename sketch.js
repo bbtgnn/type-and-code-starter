@@ -1,5 +1,8 @@
 import { AudioController } from "./modules/audioController.js";
-import { calculateTextProperties } from "./modules/textCalculations.js";
+import {
+  calculateTextProperties,
+  getTextAlignment,
+} from "./modules/textCalculations.js";
 import { DeviceOrientationController } from "./modules/deviceOrientationController.js";
 import { DensityController } from "./modules/densityController.js";
 import { InputController } from "./modules/inputController.js";
@@ -7,22 +10,12 @@ import {
   disegnaPunto,
   caricamentoRisorse,
   impostazioni,
-  sfondo,
-  stileTesto,
+  sotto,
+  sopra,
+  configurazione,
 } from "./code.js";
 
 // /* Variabili */
-
-let testo = "gas\nqd";
-
-let dimensione = 0.8;
-let interlinea = 0.9;
-let allineamento = "centro";
-
-let percorsoFont = "./assets/InputMonoCondensed-BoldItalic.ttf";
-
-let mostraTestoSotto = true;
-let mostraTestoSopra = false;
 
 /* Controllers */
 
@@ -40,34 +33,26 @@ const inputController = new InputController(
 let font;
 
 function preload() {
-  font = loadFont(percorsoFont);
+  font = loadFont(configurazione.percorsoFont);
   caricamentoRisorse();
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-
   audioController.init();
-  // Initialize input controller which handles all UI interactions
   inputController.init();
-
-  frameRate(30);
-  angleMode(DEGREES);
-
   impostazioni();
 }
 
 function draw() {
-  sfondo();
-
   // Calculate text properties
 
   const { fontSize, position } = calculateTextProperties(
-    testo,
-    dimensione,
-    interlinea,
+    configurazione.testo,
+    configurazione.dimensione,
+    configurazione.interlinea,
     font,
-    allineamento,
+    configurazione.allineamento,
     width,
     height
   );
@@ -76,34 +61,26 @@ function draw() {
 
   textFont(font);
   textSize(fontSize);
-  textLeading(fontSize * interlinea);
+  textLeading(fontSize * configurazione.interlinea);
+  textAlign(getTextAlignment(configurazione.allineamento));
 
-  switch (allineamento) {
-    case "centro":
-      textAlign(CENTER);
-      break;
-    case "sinistra":
-      textAlign(LEFT);
-      break;
-    case "destra":
-      textAlign(RIGHT);
-      break;
-    default:
-      textAlign(CENTER);
+  function testo() {
+    text(configurazione.testo, position.x, position.y);
   }
 
-  if (mostraTestoSotto) {
-    push();
-    stileTesto();
-    text(testo, position.x, position.y);
-    pop();
-  }
+  sotto(testo);
 
   // Points
 
-  const points = font.textToPoints(testo, position.x, position.y, fontSize, {
-    sampleFactor: densityController.getDensity(),
-  });
+  const points = font.textToPoints(
+    configurazione.testo,
+    position.x,
+    position.y,
+    fontSize,
+    {
+      sampleFactor: densityController.getDensity(),
+    }
+  );
 
   const micLevel = audioController.getLevel();
 
@@ -120,12 +97,7 @@ function draw() {
 
   //
 
-  if (mostraTestoSopra) {
-    push();
-    stileTesto();
-    text(testo, position.x, position.y);
-    pop();
-  }
+  sopra(testo);
 
   // Motion permissions
 
@@ -143,11 +115,13 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
+//
+
 // @ts-ignore
 window.preload = preload;
 // @ts-ignore
 window.setup = setup;
 // @ts-ignore
 window.draw = draw;
-
+// @ts-ignore
 window.windowResized = windowResized;

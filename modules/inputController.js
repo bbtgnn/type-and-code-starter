@@ -4,9 +4,9 @@
 export class InputController {
   /**
    * Creates a new InputController
-   * @param {object} audioController - Audio controller instance
-   * @param {object} densityController - Density controller instance
-   * @param {object} orientationController - Device orientation controller instance
+   * @param {import("./audioController").AudioController} audioController - Audio controller instance
+   * @param {import("./densityController").DensityController} densityController - Density controller instance
+   * @param {import("./deviceOrientationController").DeviceOrientationController} orientationController - Device orientation controller instance
    */
   constructor(audioController, densityController, orientationController) {
     this.audioController = audioController;
