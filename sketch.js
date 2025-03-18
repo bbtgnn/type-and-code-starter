@@ -23,7 +23,9 @@ const audioController = new AudioController(
   configurazione.sensibilitàMicrofonoBase
 );
 const orientationController = new DeviceOrientationController();
-const densityController = new DensityController();
+const densityController = new DensityController(
+  configurazione.densitàPuntiBase
+);
 const inputController = new InputController(
   audioController,
   densityController,

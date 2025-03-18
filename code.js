@@ -7,6 +7,7 @@ export const configurazione = {
   mostraTestoSotto: true,
   mostraTestoSopra: false,
   sensibilitàMicrofonoBase: 1,
+  densitàPuntiBase: 1,
 };
 
 /**

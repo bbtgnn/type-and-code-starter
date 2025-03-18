@@ -3,6 +3,7 @@ export class AudioController {
     // @ts-ignore
     this.mic = null;
     this.sensitivity = baseSensitivity;
+    this.defaultSensitivity = baseSensitivity;
   }
 
   init() {
@@ -29,6 +30,6 @@ export class AudioController {
   }
 
   resetSensitivity() {
-    this.sensitivity = 1;
+    this.sensitivity = this.defaultSensitivity;
   }
 }
