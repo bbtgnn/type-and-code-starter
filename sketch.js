@@ -83,6 +83,7 @@ function draw() {
   );
 
   const micLevel = audioController.getLevel();
+  const orientationData = orientationController.getOrientationData();
 
   points.forEach((point, index) =>
     disegnaPunto({
@@ -92,6 +93,9 @@ function draw() {
       indice: index,
       unita: min(width / 10, height / 10),
       volume: micLevel,
+      alpha: orientationData.alpha,
+      beta: orientationData.beta,
+      gamma: orientationData.gamma,
     })
   );
 
