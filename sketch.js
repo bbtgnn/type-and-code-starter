@@ -21,13 +21,10 @@ let densita = 1;
 
 // Device orientation variables
 let permissionGranted = false;
-let f = 0;
 
 /* Funzione */
 
 const audioController = new AudioController();
-
-let micLevel = 0;
 
 /* Procedure (cose brutte) */
 
@@ -41,7 +38,6 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  colorMode(HSB, 360, 100, 100, 100);
 
   audioController.init();
 
@@ -83,8 +79,6 @@ function requestDevicePermission() {
 }
 
 function draw() {
-  // Create a background color that changes when shaken
-  background(f, 20, 100);
   sfondo();
 
   if (!permissionGranted) {
@@ -95,7 +89,7 @@ function draw() {
     return;
   }
 
-  micLevel = audioController.getLevel();
+  const micLevel = audioController.getLevel();
 
   fill("deeppink");
   textFont(font);
@@ -153,12 +147,6 @@ function draw() {
   // } else if (allineamento === "destra") {
   //   rect(xPos - bounds.w, yPos + bounds.y, bounds.w, bounds.h);
   // }
-}
-
-/*The deviceShaken() function is called when the device total acceleration changes of accelerationX and accelerationY values is more than the threshold value. The default threshold is set to 30. The threshold value can be changed using setShakeThreshold()*/
-
-function deviceShaken() {
-  f = (f + 30) % 360;
 }
 
 function windowResized() {
@@ -297,5 +285,3 @@ window.setup = setup;
 window.draw = draw;
 
 window.windowResized = windowResized;
-window.keyPressed = keyPressed;
-window.deviceShaken = deviceShaken;

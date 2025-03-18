@@ -6,7 +6,9 @@ export function impostazioni() {}
 
 //
 
-export function sfondo() {}
+export function sfondo() {
+  background(255);
+}
 
 //
 
