@@ -1,6 +1,8 @@
 import { AudioController } from "./modules/audioController.js";
 import { calculateTextProperties } from "./modules/textCalculations.js";
 import { DeviceOrientationController } from "./modules/deviceOrientationController.js";
+import { DensityController } from "./modules/densityController.js";
+import { InputController } from "./modules/inputController.js";
 import {
   disegnaPunto,
   caricamentoRisorse,
@@ -19,13 +21,19 @@ let allineamento = "centro";
 
 let percorsoFont = "./assets/InputMonoCondensed-BoldItalic.ttf";
 
-let mostraTesto = true;
-let densita = 1;
+let mostraTestoSotto = true;
+let mostraTestoSopra = false;
 
 /* Controllers */
 
 const audioController = new AudioController();
 const orientationController = new DeviceOrientationController();
+const densityController = new DensityController();
+const inputController = new InputController(
+  audioController,
+  densityController,
+  orientationController
+);
 
 /* Font */
 
@@ -40,12 +48,12 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
 
   audioController.init();
-  // Don't initialize orientation controller yet - wait for permission
+  // Initialize input controller which handles all UI interactions
+  inputController.init();
 
   frameRate(30);
   angleMode(DEGREES);
 
-  setupStartButtonClick();
   impostazioni();
 }
 
@@ -84,7 +92,7 @@ function draw() {
       textAlign(CENTER);
   }
 
-  if (mostraTesto) {
+  if (mostraTestoSotto) {
     push();
     stileTesto();
     text(testo, position.x, position.y);
@@ -94,7 +102,7 @@ function draw() {
   // Points
 
   const points = font.textToPoints(testo, position.x, position.y, fontSize, {
-    sampleFactor: densita / 10,
+    sampleFactor: densityController.getDensity(),
   });
 
   const micLevel = audioController.getLevel();
@@ -110,6 +118,15 @@ function draw() {
     })
   );
 
+  //
+
+  if (mostraTestoSopra) {
+    push();
+    stileTesto();
+    text(testo, position.x, position.y);
+    pop();
+  }
+
   // Motion permissions
 
   if (!orientationController.isPermissionGranted()) {
@@ -124,82 +141,6 @@ function draw() {
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-}
-
-function setupStartButtonClick() {
-  const startButton = document.getElementById("start");
-  if (startButton) {
-    startButton.addEventListener("click", () => {
-      const introElement = document.getElementById("intro");
-      if (introElement) introElement.style.display = "none";
-
-      document.querySelectorAll(".control-button").forEach((button) => {
-        // @ts-ignore - Element.style is not recognized by TypeScript
-        if (button) button.style.opacity = "0";
-      });
-
-      document
-        .querySelectorAll(".control-description-container")
-        .forEach((description) => {
-          // @ts-ignore - Element.style is not recognized by TypeScript
-          if (description) description.style.display = "none";
-        });
-
-      // Request device orientation permission and start audio
-      orientationController.requestPermission().then((granted) => {
-        // Initialize orientation controller only after permission is granted
-        if (granted) orientationController.init();
-        // Start audio regardless of orientation permission
-        audioController.start();
-      });
-    });
-  }
-
-  const decreaseSensitivityButton = document.getElementById(
-    "decrease-sensitivity"
-  );
-  if (decreaseSensitivityButton) {
-    decreaseSensitivityButton.addEventListener("click", () => {
-      audioController.decreaseSensitivity();
-    });
-  }
-
-  const increaseSensitivityButton = document.getElementById(
-    "increase-sensitivity"
-  );
-  if (increaseSensitivityButton) {
-    increaseSensitivityButton.addEventListener("click", () => {
-      audioController.increaseSensitivity();
-    });
-  }
-
-  const resetSensitivityButton = document.getElementById("reset-sensitivity");
-  if (resetSensitivityButton) {
-    resetSensitivityButton.addEventListener("click", () => {
-      audioController.resetSensitivity();
-    });
-  }
-
-  const decreaseDensityButton = document.getElementById("decrease-density");
-  if (decreaseDensityButton) {
-    decreaseDensityButton.addEventListener("click", () => {
-      densita -= 0.1;
-    });
-  }
-
-  const increaseDensityButton = document.getElementById("increase-density");
-  if (increaseDensityButton) {
-    increaseDensityButton.addEventListener("click", () => {
-      densita += 0.1;
-    });
-  }
-
-  const resetDensityButton = document.getElementById("reset-density");
-  if (resetDensityButton) {
-    resetDensityButton.addEventListener("click", () => {
-      densita = 1;
-    });
-  }
 }
 
 // @ts-ignore
