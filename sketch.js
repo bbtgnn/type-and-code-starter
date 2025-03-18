@@ -1,4 +1,10 @@
 import { AudioController } from "./modules/audioController.js";
+import {
+  disegnaPunto,
+  caricamentoRisorse,
+  impostazioni,
+  sfondo,
+} from "./code.js";
 
 // /* Variabili */
 
@@ -15,7 +21,6 @@ let densita = 1;
 
 // Device orientation variables
 let permissionGranted = false;
-let nonios13device = false;
 let f = 0;
 
 /* Funzione */
@@ -24,29 +29,6 @@ const audioController = new AudioController();
 
 let micLevel = 0;
 
-function disegnaPunto({ x, y, angolo, indice, unita, volume }) {
-  push();
-  translate(x, y);
-
-  // if (indice % 2 == 0) {
-  //   fill(0);
-  // } else {
-  //   fill(255);
-  // }
-  noFill();
-  stroke(0);
-
-  rectMode(CENTER);
-  fill("deeppink");
-  noStroke();
-  rotate(frameCount + indice);
-  scale(1 + volume * 10);
-  rect(0, 0, unita / 2);
-  pop();
-
-  // image(graphics, x, y);
-}
-
 /* Procedure (cose brutte) */
 
 let font;
@@ -54,6 +36,7 @@ let actualFontSize = 1;
 
 function preload() {
   font = loadFont(percorsoFont);
+  caricamentoRisorse();
 }
 
 function setup() {
@@ -68,6 +51,7 @@ function setup() {
   angleMode(DEGREES);
 
   setupStartButtonClick();
+  impostazioni();
 
   // Set default permission for non-iOS devices
   if (
@@ -77,7 +61,6 @@ function setup() {
     )
   ) {
     permissionGranted = true;
-    nonios13device = true;
   }
 }
 
