@@ -11,8 +11,6 @@ export function sfondo() {}
 //
 
 /**
- * Questa funzione si occupa di disegnare un punto della lettera.
- *
  * @typedef {Object} Ingredienti
  * @property {number} x - La coordinata x del punto
  * @property {number} y - La coordinata y del punto

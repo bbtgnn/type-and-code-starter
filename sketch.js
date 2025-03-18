@@ -85,6 +85,7 @@ function requestDevicePermission() {
 function draw() {
   // Create a background color that changes when shaken
   background(f, 20, 100);
+  sfondo();
 
   if (!permissionGranted) {
     fill(0);
@@ -215,19 +216,6 @@ function getTextAlignment() {
       return RIGHT;
     default:
       return CENTER;
-  }
-}
-
-let isRecording = false;
-
-function keyPressed() {
-  const increase = 0.1;
-
-  if (key == "+") {
-    densita += increase;
-  }
-  if (key == "-" && densita > increase * 2) {
-    densita -= increase;
   }
 }
 
