@@ -63,7 +63,7 @@ export function sotto(disegnaTesto) {
  * @param {function} disegnaTesto - La funzione che disegna il testo
  */
 export function sopra(disegnaTesto) {
-  stroke("white");
-  noFill();
-  disegnaTesto();
+  //   stroke("white");
+  //   noFill();
+  //   disegnaTesto();
 }

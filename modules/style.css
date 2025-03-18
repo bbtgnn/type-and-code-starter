@@ -1,0 +1,11 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+
+  font-family: ui-monospace, "Cascadia Mono", "Segoe UI Mono", "Ubuntu Mono",
+    "Roboto Mono", Menlo, Monaco, "Courier New", monospace;
+}
+canvas {
+  display: block;
+}
