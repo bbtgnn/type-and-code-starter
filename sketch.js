@@ -1,14 +1,16 @@
 import { AudioController } from "./modules/audioController.js";
+import { calculateTextProperties } from "./modules/textCalculations.js";
 import {
   disegnaPunto,
   caricamentoRisorse,
   impostazioni,
   sfondo,
+  stileTesto,
 } from "./code.js";
 
 // /* Variabili */
 
-let testo = "g";
+let testo = "gas\nqd";
 
 let dimensione = 0.8;
 let interlinea = 0.9;
@@ -26,10 +28,7 @@ let permissionGranted = false;
 
 const audioController = new AudioController();
 
-/* Procedure (cose brutte) */
-
 let font;
-let actualFontSize = 1;
 
 function preload() {
   font = loadFont(percorsoFont);
@@ -41,8 +40,6 @@ function setup() {
 
   audioController.init();
 
-  textAlign(getTextAlignment());
-  getTextBounds(true);
   frameRate(30);
   angleMode(DEGREES);
 
@@ -52,8 +49,11 @@ function setup() {
   // Set default permission for non-iOS devices
   if (
     !(
-      typeof DeviceOrientationEvent !== "undefined" &&
-      typeof DeviceOrientationEvent.requestPermission === "function"
+      // @ts-ignore - DeviceOrientationEvent.requestPermission is not recognized by TypeScript
+      (
+        typeof DeviceOrientationEvent !== "undefined" &&
+        typeof DeviceOrientationEvent.requestPermission === "function"
+      )
     )
   ) {
     permissionGranted = true;
@@ -63,9 +63,11 @@ function setup() {
 // will handle first time visiting to grant access
 function requestDevicePermission() {
   if (
+    // @ts-ignore - DeviceOrientationEvent.requestPermission is not recognized by TypeScript
     typeof DeviceOrientationEvent !== "undefined" &&
     typeof DeviceOrientationEvent.requestPermission === "function"
   ) {
+    // @ts-ignore - DeviceOrientationEvent.requestPermission is not recognized by TypeScript
     DeviceOrientationEvent.requestPermission()
       .then((response) => {
         if (response === "granted") {
@@ -81,50 +83,52 @@ function requestDevicePermission() {
 function draw() {
   sfondo();
 
-  if (!permissionGranted) {
-    fill(0);
-    textSize(24);
-    textAlign(CENTER, CENTER);
-    text("Please grant sensor permissions", width / 2, height / 2);
-    return;
-  }
+  // Calculate text properties
 
-  const micLevel = audioController.getLevel();
+  const { fontSize, position } = calculateTextProperties(
+    testo,
+    dimensione,
+    interlinea,
+    font,
+    allineamento,
+    width,
+    height
+  );
 
-  fill("deeppink");
+  // Text setup
+
   textFont(font);
-  textSize(actualFontSize);
-  textLeading(actualFontSize * interlinea);
+  textSize(fontSize);
+  textLeading(fontSize * interlinea);
 
-  // Get the current text bounds at the actual text size
-  const bounds = getTextBounds();
-
-  // Calculate position based on alignment
-  let xPos, yPos;
-
-  if (allineamento === "centro") {
-    xPos = width / 2;
-    // Adjust y position to account for the actual center of the text bounds
-    // rather than just using height/2
-    yPos = height / 2 - bounds.y - bounds.h / 2;
-  } else if (allineamento === "sinistra") {
-    xPos = width * 0.1; // 10% margin from left
-    yPos = height / 2 - bounds.y - bounds.h / 2;
-  } else if (allineamento === "destra") {
-    xPos = width * 0.9; // 10% margin from right
-    yPos = height / 2 - bounds.y - bounds.h / 2;
+  switch (allineamento) {
+    case "centro":
+      textAlign(CENTER);
+      break;
+    case "sinistra":
+      textAlign(LEFT);
+      break;
+    case "destra":
+      textAlign(RIGHT);
+      break;
+    default:
+      textAlign(CENTER);
   }
 
-  // Draw text at calculated position
   if (mostraTesto) {
     push();
-    text(testo, xPos, yPos);
+    stileTesto();
+    text(testo, position.x, position.y);
     pop();
   }
 
-  const points = font.textToPoints(testo, xPos, yPos, actualFontSize, {
+  // Points
+
+  const points = font.textToPoints(testo, position.x, position.y, fontSize, {
     sampleFactor: densita / 10,
   });
+
+  const micLevel = audioController.getLevel();
 
   points.forEach((point, index) =>
     disegnaPunto({
@@ -137,74 +141,20 @@ function draw() {
     })
   );
 
-  // Debug: draw bounding box (uncomment to visualize)
-  // noFill();
-  // stroke('blue');
-  // if (allineamento === "centro") {
-  //   rect(xPos - bounds.w/2, yPos + bounds.y, bounds.w, bounds.h);
-  // } else if (allineamento === "sinistra") {
-  //   rect(xPos, yPos + bounds.y, bounds.w, bounds.h);
-  // } else if (allineamento === "destra") {
-  //   rect(xPos - bounds.w, yPos + bounds.y, bounds.w, bounds.h);
-  // }
+  // Motion permissions
+
+  if (!permissionGranted) {
+    push();
+    fill(0);
+    textSize(24);
+    textAlign(CENTER, CENTER);
+    text("Please grant sensor permissions", width / 2, height / 2);
+    pop();
+  }
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-  getTextBounds(true);
-}
-
-function getTextBounds(recalculateSize = false) {
-  const testFontSize = 10;
-  let bounds;
-
-  if (recalculateSize) {
-    // Calculate scaling with test font size
-    push();
-    textSize(testFontSize);
-    textLeading(testFontSize * interlinea);
-    textAlign(getTextAlignment());
-    bounds = font.textBounds(testo, 0, 0);
-    pop();
-
-    // Calculate the ratio needed to fit the width and height within canvas
-    const widthRatio = width / bounds.w;
-    const heightRatio = height / bounds.h;
-
-    // Use the smaller ratio to ensure text fits in both dimensions
-    // Apply some margin by multiplying by 0.9 (90% of available space)
-    const ratio = Math.min(widthRatio, heightRatio) * 0.9;
-
-    // Calculate the base font size (without user scaling)
-    const baseFontSize = testFontSize * ratio;
-
-    // Apply user's dimensione scaling factor to get the actual font size
-    actualFontSize = baseFontSize * dimensione;
-  }
-
-  // Get bounds at current actualFontSize
-  push();
-  textSize(actualFontSize);
-  textLeading(actualFontSize * interlinea);
-  textAlign(getTextAlignment());
-  bounds = font.textBounds(testo, 0, 0);
-  pop();
-
-  // Return the actual bounds at the current text size
-  return bounds;
-}
-
-function getTextAlignment() {
-  switch (allineamento) {
-    case "centro":
-      return CENTER;
-    case "sinistra":
-      return LEFT;
-    case "destra":
-      return RIGHT;
-    default:
-      return CENTER;
-  }
 }
 
 function setupStartButtonClick() {
@@ -215,12 +165,14 @@ function setupStartButtonClick() {
       if (introElement) introElement.style.display = "none";
 
       document.querySelectorAll(".control-button").forEach((button) => {
+        // @ts-ignore - Element.style is not recognized by TypeScript
         if (button) button.style.opacity = "0";
       });
 
       document
         .querySelectorAll(".control-description-container")
         .forEach((description) => {
+          // @ts-ignore - Element.style is not recognized by TypeScript
           if (description) description.style.display = "none";
         });
 

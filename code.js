@@ -1,13 +1,15 @@
 export function caricamentoRisorse() {}
 
-//
-
 export function impostazioni() {}
 
 //
 
 export function sfondo() {
   background(255);
+}
+
+export function stileTesto() {
+  fill("deeppink");
 }
 
 //
