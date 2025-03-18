@@ -1,3 +1,5 @@
+import { AudioController } from "./modules/audioController.js";
+
 // /* Variabili */
 
 let testo = "g";
@@ -10,7 +12,6 @@ let percorsoFont = "./assets/InputMonoCondensed-BoldItalic.ttf";
 
 let mostraTesto = true;
 let densita = 1;
-let sensibilita = 1;
 
 // Device orientation variables
 let permissionGranted = false;
@@ -19,20 +20,8 @@ let f = 0;
 
 /* Funzione */
 
-let img;
+const audioController = new AudioController();
 
-function carica() {
-  img = loadImage("./assets/download.jpeg");
-}
-
-let graphics;
-
-function impostazioni() {
-  graphics = createGraphics(50, 50);
-  graphics.image(img, -30, -30);
-}
-
-let mic;
 let micLevel = 0;
 
 function disegnaPunto({ x, y, angolo, indice, unita, volume }) {
@@ -65,22 +54,19 @@ let actualFontSize = 1;
 
 function preload() {
   font = loadFont(percorsoFont);
-  carica();
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   colorMode(HSB, 360, 100, 100, 100);
 
-  mic = new p5.AudioIn();
-  mic.start();
+  audioController.init();
 
   textAlign(getTextAlignment());
   getTextBounds(true);
   frameRate(30);
   angleMode(DEGREES);
 
-  impostazioni();
   setupStartButtonClick();
 
   // Set default permission for non-iOS devices
@@ -125,7 +111,7 @@ function draw() {
     return;
   }
 
-  micLevel = mic.getLevel() * sensibilita;
+  micLevel = audioController.getLevel();
 
   fill("deeppink");
   textFont(font);
@@ -281,7 +267,7 @@ function setupStartButtonClick() {
 
       // Request device orientation permission and start audio
       requestDevicePermission();
-      userStartAudio();
+      audioController.start();
     });
   }
 
@@ -290,8 +276,7 @@ function setupStartButtonClick() {
   );
   if (decreaseSensitivityButton) {
     decreaseSensitivityButton.addEventListener("click", () => {
-      sensibilita -= 0.5;
-      if (sensibilita < 0.1) sensibilita = 0.1;
+      audioController.decreaseSensitivity();
     });
   }
 
@@ -300,14 +285,14 @@ function setupStartButtonClick() {
   );
   if (increaseSensitivityButton) {
     increaseSensitivityButton.addEventListener("click", () => {
-      sensibilita += 0.5;
+      audioController.increaseSensitivity();
     });
   }
 
   const resetSensitivityButton = document.getElementById("reset-sensitivity");
   if (resetSensitivityButton) {
     resetSensitivityButton.addEventListener("click", () => {
-      sensibilita = 1;
+      audioController.resetSensitivity();
     });
   }
 
@@ -332,3 +317,14 @@ function setupStartButtonClick() {
     });
   }
 }
+
+// @ts-ignore
+window.preload = preload;
+// @ts-ignore
+window.setup = setup;
+// @ts-ignore
+window.draw = draw;
+
+window.windowResized = windowResized;
+window.keyPressed = keyPressed;
+window.deviceShaken = deviceShaken;
