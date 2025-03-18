@@ -1,11 +1,12 @@
 export const configurazione = {
-  testo: "Hi :)",
+  testo: "A",
   dimensione: 0.8,
   interlinea: 0.7,
   allineamento: "centro",
   percorsoFont: "./assets/InputMonoCondensed-BoldItalic.ttf",
   mostraTestoSotto: true,
   mostraTestoSopra: false,
+  sensibilitàMicrofonoBase: 1,
 };
 
 /**

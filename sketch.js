@@ -19,7 +19,9 @@ import {
 
 /* Controllers */
 
-const audioController = new AudioController();
+const audioController = new AudioController(
+  configurazione.sensibilitàMicrofonoBase
+);
 const orientationController = new DeviceOrientationController();
 const densityController = new DensityController();
 const inputController = new InputController(

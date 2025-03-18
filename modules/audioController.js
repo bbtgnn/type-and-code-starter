@@ -1,8 +1,8 @@
 export class AudioController {
-  constructor() {
+  constructor(baseSensitivity = 1) {
     // @ts-ignore
     this.mic = null;
-    this.sensitivity = 1;
+    this.sensitivity = baseSensitivity;
   }
 
   init() {
