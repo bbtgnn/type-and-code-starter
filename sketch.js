@@ -1,5 +1,6 @@
 import { AudioController } from "./modules/audioController.js";
 import { calculateTextProperties } from "./modules/textCalculations.js";
+import { DeviceOrientationController } from "./modules/deviceOrientationController.js";
 import {
   disegnaPunto,
   caricamentoRisorse,
@@ -21,12 +22,12 @@ let percorsoFont = "./assets/InputMonoCondensed-BoldItalic.ttf";
 let mostraTesto = true;
 let densita = 1;
 
-// Device orientation variables
-let permissionGranted = false;
-
-/* Funzione */
+/* Controllers */
 
 const audioController = new AudioController();
+const orientationController = new DeviceOrientationController();
+
+/* Font */
 
 let font;
 
@@ -39,45 +40,13 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
 
   audioController.init();
+  // Don't initialize orientation controller yet - wait for permission
 
   frameRate(30);
   angleMode(DEGREES);
 
   setupStartButtonClick();
   impostazioni();
-
-  // Set default permission for non-iOS devices
-  if (
-    !(
-      // @ts-ignore - DeviceOrientationEvent.requestPermission is not recognized by TypeScript
-      (
-        typeof DeviceOrientationEvent !== "undefined" &&
-        typeof DeviceOrientationEvent.requestPermission === "function"
-      )
-    )
-  ) {
-    permissionGranted = true;
-  }
-}
-
-// will handle first time visiting to grant access
-function requestDevicePermission() {
-  if (
-    // @ts-ignore - DeviceOrientationEvent.requestPermission is not recognized by TypeScript
-    typeof DeviceOrientationEvent !== "undefined" &&
-    typeof DeviceOrientationEvent.requestPermission === "function"
-  ) {
-    // @ts-ignore - DeviceOrientationEvent.requestPermission is not recognized by TypeScript
-    DeviceOrientationEvent.requestPermission()
-      .then((response) => {
-        if (response === "granted") {
-          permissionGranted = true;
-        } else {
-          permissionGranted = false;
-        }
-      })
-      .catch(console.error);
-  }
 }
 
 function draw() {
@@ -143,7 +112,7 @@ function draw() {
 
   // Motion permissions
 
-  if (!permissionGranted) {
+  if (!orientationController.isPermissionGranted()) {
     push();
     fill(0);
     textSize(24);
@@ -177,8 +146,12 @@ function setupStartButtonClick() {
         });
 
       // Request device orientation permission and start audio
-      requestDevicePermission();
-      audioController.start();
+      orientationController.requestPermission().then((granted) => {
+        // Initialize orientation controller only after permission is granted
+        if (granted) orientationController.init();
+        // Start audio regardless of orientation permission
+        audioController.start();
+      });
     });
   }
 
