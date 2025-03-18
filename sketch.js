@@ -29,7 +29,8 @@ const densityController = new DensityController(
 const inputController = new InputController(
   audioController,
   densityController,
-  orientationController
+  orientationController,
+  configurazione.nascondiInterfaccia
 );
 
 /* Font */

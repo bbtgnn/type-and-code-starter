@@ -1,13 +1,15 @@
 export const configurazione = {
   testo: "A",
+
   dimensione: 0.8,
   interlinea: 0.7,
   allineamento: "centro",
   percorsoFont: "./assets/InputMonoCondensed-BoldItalic.ttf",
-  mostraTestoSotto: true,
-  mostraTestoSopra: false,
+
   sensibilitàMicrofonoBase: 1,
   densitàPuntiBase: 1,
+
+  nascondiInterfaccia: false,
 };
 
 /**
@@ -18,12 +20,12 @@ export const configurazione = {
  * @property {number} x - La coordinata x del punto
  * @property {number} y - La coordinata y del punto
  * @property {number} angolo - L'angolo della curva della font in quel punto
- * @property {number} indice - Il numero del punto nella sequenza
- * @property {number} unita - Unita' di misura di riferimento
- * @property {number} volume - Il volume del microfono
- * @property {number} [alpha] - Device orientation alpha angle (z-axis rotation)
- * @property {number} [beta] - Device orientation beta angle (front-to-back tilt)
- * @property {number} [gamma] - Device orientation gamma angle (left-to-right tilt)
+ * @property {number} indice - Il numero del punto nella sequenza (0, 1, 2, 3, ...)
+ * @property {number} unita - Unita' di misura: corrisponde al 10% della dimensione più piccola della finestra
+ * @property {number} volume - Il volume del microfono - Varia da 0 a 1
+ * @property {number} [alpha] - Device orientation alpha angle (z-axis rotation) - Varia da 0 a 360
+ * @property {number} [beta] - Device orientation beta angle (front-to-back tilt) - Varia da -90 a 90
+ * @property {number} [gamma] - Device orientation gamma angle (left-to-right tilt) - Varia da -90 a 90
  *
  * @param {Ingredienti} ingredienti
  */
@@ -46,8 +48,6 @@ export function disegnaPunto({
   }
   ellipse(x, y, (unita / 10) * (volume + 1) * 10);
 }
-
-//
 
 /**
  * Carica le risorse necessarie

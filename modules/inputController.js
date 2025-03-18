@@ -7,11 +7,18 @@ export class InputController {
    * @param {import("./audioController").AudioController} audioController - Audio controller instance
    * @param {import("./densityController").DensityController} densityController - Density controller instance
    * @param {import("./deviceOrientationController").DeviceOrientationController} orientationController - Device orientation controller instance
+   * @param {boolean} nascondiInterfaccia - Whether to hide the interface and auto-start
    */
-  constructor(audioController, densityController, orientationController) {
+  constructor(
+    audioController,
+    densityController,
+    orientationController,
+    nascondiInterfaccia = false
+  ) {
     this.audioController = audioController;
     this.densityController = densityController;
     this.orientationController = orientationController;
+    this.nascondiInterfaccia = nascondiInterfaccia;
     this.initialized = false;
   }
 
@@ -24,6 +31,19 @@ export class InputController {
     this.setupStartButton();
     this.setupSensitivityButtons();
     this.setupDensityButtons();
+
+    // Auto-start if nascondiInterfaccia is true
+    if (this.nascondiInterfaccia) {
+      this.hideIntroElements();
+
+      // Request device orientation permission and start audio
+      this.orientationController.requestPermission().then((granted) => {
+        // Initialize orientation controller only after permission is granted
+        if (granted) this.orientationController.init();
+        // Start audio regardless of orientation permission
+        this.audioController.start();
+      });
+    }
 
     this.initialized = true;
   }
