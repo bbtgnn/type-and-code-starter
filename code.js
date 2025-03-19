@@ -21,8 +21,9 @@ export const configurazione = {
  * @property {number} y - La coordinata y del punto
  * @property {number} angolo - L'angolo della curva della font in quel punto
  * @property {number} indice - Il numero del punto nella sequenza (0, 1, 2, 3, ...)
- * @property {number} unita - Unita' di misura: corrisponde al 10% della dimensione più piccola della finestra
+ * @property {number} unita - Unita' di misura: corrisponde al 10% della dimensione più piccola della finestra (larghezza o altezza)
  * @property {number} volume - Il volume del microfono - Varia da 0 a 1
+ * @property {number} frameCount - Il numero di frame passati dall'avvio del programma
  * @property {number} [alpha] - Device orientation alpha angle (z-axis rotation) - Varia da 0 a 360
  * @property {number} [beta] - Device orientation beta angle (front-to-back tilt) - Varia da -90 a 90
  * @property {number} [gamma] - Device orientation gamma angle (left-to-right tilt) - Varia da -90 a 90
@@ -36,17 +37,24 @@ export function disegnaPunto({
   indice,
   unita,
   volume,
+  frameCount,
   alpha = 0,
   beta = 0,
   gamma = 0,
 }) {
-  // Esempio 1: Cerchi con colore alternato che reagiscono al volume
-  if (indice % 2 === 0) {
+  const size = sin((frameCount + indice) * 6) * ((volume * unita) / 2) * unita;
+
+  if (indice % 2 == 0) {
     fill("black");
   } else {
     fill("white");
   }
-  ellipse(x, y, (unita / 10) * (volume + 1) * 10);
+  noStroke();
+
+  push();
+  translate(x, y);
+  ellipse(0, 0, size);
+  pop();
 }
 
 /**
@@ -69,11 +77,11 @@ export function impostazioni() {
  * @param {function} disegnaTesto - La funzione che disegna il testo
  */
 export function sotto(disegnaTesto) {
-  background(255);
+  background("deeppink");
 
   // [INFO] Rimuovi il commento per disegnare il testo
-  // fill("black");
-  // disegnaTesto();
+  fill("white");
+  disegnaTesto();
 }
 
 /**

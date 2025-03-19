@@ -101,6 +101,7 @@ function draw() {
       alpha: orientationData.alpha,
       beta: orientationData.beta,
       gamma: orientationData.gamma,
+      frameCount,
     })
   );
 
