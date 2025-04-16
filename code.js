@@ -1,5 +1,5 @@
 export const configurazione = {
-  testo: "a",
+  testo: "G",
 
   dimensione: 0.8,
   interlinea: 0.7,
@@ -42,10 +42,18 @@ export function disegnaPunto({
   beta = 0,
   gamma = 0,
 }) {
-  // noStroke();
+  const size = sin((frameCount + indice) * 6) * ((volume * unita) / 2) * unita;
+
+  if (indice % 2 == 0) {
+    fill("black");
+  } else {
+    fill("white");
+  }
+  noStroke();
+
   push();
   translate(x, y);
-  line(0, 0, alpha, gamma);
+  ellipse(0, 0, size);
   pop();
 }
 
@@ -62,7 +70,6 @@ export function caricamentoRisorse() {}
 export function impostazioni() {
   frameRate(30);
   angleMode(DEGREES);
-  rectMode(CENTER);
 }
 
 /**
